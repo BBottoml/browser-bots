@@ -7,24 +7,13 @@ from time import sleep
 class ebayBot():
     
     def __init__(self, email, password):
+        
         self.browserProfile = webdriver.ChromeOptions()
         self.browserProfile.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
         self.browser = webdriver.Chrome(options=self.browserProfile)
         self.email = email
         self.password = password
 
-    def signIn(self):
-
-        self.browser.get('https://signin.ebay.com/ws/eBayISAPI.dll?SignIn&ru=https%3A%2F%2Fwww.ebay.com%2F')
-
-        emailInput = self.browser.find_element_by_id('userid')
-        passwordInput = self.browser.find_element_by_id('pass')
-
-        emailInput.send_keys(self.email)
-        passwordInput.send_keys(self.password)
-        passwordInput.send_keys(Keys.ENTER)
-        sleep(1)
-    
     def buyItem(self,someLink):
         
         # Navigate to link
@@ -43,8 +32,47 @@ class ebayBot():
             sleep(1)
         
         # Buy item
-        sleep(3)
+        sleep(2)
         purchaseButton = self.browser.find_element_by_class_name('confirm-and-pay-wrapper')
         purchaseAction = ActionChains(self.browser).move_to_element(purchaseButton).click().perform()
-        sleep(5)
+        sleep(2)
+    
+    def buyItems(self,items):
         
+        for item in items:
+            self.buyItem(item)
+
+    def processItems(self, document):
+
+        items = []
+        
+        try:
+            file = open(document, 'r') 
+        except FileNotFoundError as fnf:
+            print(fnf)
+            exit()
+        try:
+            for line in file.readline():
+                file.append(line.strip('\n'))
+        except:
+            print('Ensure the file is one link per line')
+            exit()
+
+        return items
+
+    def signIn(self):
+
+        self.browser.get('https://signin.ebay.com/ws/eBayISAPI.dll?SignIn&ru=https%3A%2F%2Fwww.ebay.com%2F')
+
+        emailInput = self.browser.find_element_by_id('userid')
+        passwordInput = self.browser.find_element_by_id('pass')
+
+        emailInput.send_keys(self.email)
+        passwordInput.send_keys(self.password)
+        passwordInput.send_keys(Keys.ENTER)
+        sleep(1)
+    
+    def logout(self):
+
+        self.browser.get('https://signin.ebay.com/ws/eBayISAPI.dll?SignIn&lgout=1')
+        exit()
