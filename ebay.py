@@ -95,3 +95,7 @@ class ebayBot():
     def logout(self):
 
         self.browser.get('https://signin.ebay.com/ws/eBayISAPI.dll?SignIn&lgout=1')
+        self.signedIn = False
+
+    def getLoginStatus(self):
+        return self.signedIn
